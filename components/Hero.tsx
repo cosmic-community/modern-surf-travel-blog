@@ -8,10 +8,10 @@ export default function Hero({ featuredPost }: HeroProps) {
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
-        {featuredPost.metadata.featured_image && (
+        {featuredPost.metadata?.featured_image && (
           <img
             src={`${featuredPost.metadata.featured_image.imgix_url}?w=2000&h=1200&fit=crop&auto=format,compress`}
-            alt={featuredPost.metadata.title}
+            alt={featuredPost.metadata?.title || 'Featured post'}
             className="w-full h-full object-cover"
           />
         )}
@@ -21,20 +21,25 @@ export default function Hero({ featuredPost }: HeroProps) {
       {/* Content */}
       <div className="relative z-10 container max-w-6xl text-center text-white">
         <div className="max-w-4xl mx-auto">
-          {featuredPost.metadata.category && (
+          {featuredPost.metadata?.category && (
             <div className="mb-6">
               <span className="inline-block bg-ocean-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                {featuredPost.metadata.category.metadata.name}
+                {featuredPost.metadata.category.metadata?.name}
               </span>
             </div>
           )}
           
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            {featuredPost.metadata.title}
+            {featuredPost.metadata?.title || 'Untitled Post'}
           </h1>
           
           <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-            # {featuredPost.metadata.title} {featuredPost.metadata.content.split('\n')[2].replace('# The Ultimate Guide to Surfing Uluwatu, Bali', '')}
+            {featuredPost.metadata?.content ? 
+              featuredPost.metadata.content.split('\n')[2]?.replace('# The Ultimate Guide to Surfing Uluwatu, Bali', '') || 
+              featuredPost.metadata.content.split('\n')[0]?.replace(/^# /, '') ||
+              'Discover amazing surf destinations and gear reviews.'
+              : 'Discover amazing surf destinations and gear reviews.'
+            }
           </p>
           
           <Link
@@ -46,27 +51,27 @@ export default function Hero({ featuredPost }: HeroProps) {
           
           {/* Author and Meta Info */}
           <div className="mt-12 flex items-center justify-center space-x-6 text-sm">
-            {featuredPost.metadata.author && (
+            {featuredPost.metadata?.author && (
               <div className="flex items-center space-x-2">
-                {featuredPost.metadata.author.metadata.avatar && (
+                {featuredPost.metadata.author.metadata?.avatar && (
                   <img
                     src={`${featuredPost.metadata.author.metadata.avatar.imgix_url}?w=80&h=80&fit=crop&auto=format,compress`}
-                    alt={featuredPost.metadata.author.metadata.name}
+                    alt={featuredPost.metadata.author.metadata?.name || 'Author'}
                     className="w-8 h-8 rounded-full"
                   />
                 )}
-                <span>By {featuredPost.metadata.author.metadata.name}</span>
+                <span>By {featuredPost.metadata.author.metadata?.name || 'Unknown Author'}</span>
               </div>
             )}
             
-            {featuredPost.metadata.location && (
+            {featuredPost.metadata?.location && (
               <span className="flex items-center space-x-1">
                 <span>📍</span>
                 <span>{featuredPost.metadata.location}</span>
               </span>
             )}
             
-            {featuredPost.metadata.wave_rating && (
+            {featuredPost.metadata?.wave_rating && (
               <span className="flex items-center space-x-1">
                 <span>⭐</span>
                 <span>{featuredPost.metadata.wave_rating.value}</span>
