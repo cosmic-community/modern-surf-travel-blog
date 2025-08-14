@@ -34,19 +34,25 @@ export default function Header() {
               Home
             </Link>
             <Link 
-              href="/destinations" 
+              href="/categories" 
+              className="text-gray-700 hover:text-ocean-600 font-medium transition-colors"
+            >
+              Categories
+            </Link>
+            <Link 
+              href="/categories/destinations" 
               className="text-gray-700 hover:text-ocean-600 font-medium transition-colors"
             >
               Destinations
             </Link>
             <Link 
-              href="/gear" 
+              href="/categories/gear-reviews" 
               className="text-gray-700 hover:text-ocean-600 font-medium transition-colors"
             >
               Gear Reviews
             </Link>
             <Link 
-              href="/culture" 
+              href="/categories/surf-culture" 
               className="text-gray-700 hover:text-ocean-600 font-medium transition-colors"
             >
               Culture
@@ -83,21 +89,28 @@ export default function Header() {
                 Home
               </Link>
               <Link 
-                href="/destinations" 
+                href="/categories" 
+                className="text-gray-700 hover:text-ocean-600 font-medium transition-colors px-4 py-2"
+                onClick={closeMenu}
+              >
+                Categories
+              </Link>
+              <Link 
+                href="/categories/destinations" 
                 className="text-gray-700 hover:text-ocean-600 font-medium transition-colors px-4 py-2"
                 onClick={closeMenu}
               >
                 Destinations
               </Link>
               <Link 
-                href="/gear" 
+                href="/categories/gear-reviews" 
                 className="text-gray-700 hover:text-ocean-600 font-medium transition-colors px-4 py-2"
                 onClick={closeMenu}
               >
                 Gear Reviews
               </Link>
               <Link 
-                href="/culture" 
+                href="/categories/surf-culture" 
                 className="text-gray-700 hover:text-ocean-600 font-medium transition-colors px-4 py-2"
                 onClick={closeMenu}
               >
