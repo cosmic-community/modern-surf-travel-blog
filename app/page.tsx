@@ -34,8 +34,6 @@ export default async function HomePage() {
             <div className="mt-6 lg:mt-0">
               <CategoryFilter 
                 categories={categories}
-                selectedCategory={null}
-                onCategoryChange={() => {}} 
               />
             </div>
           </div>

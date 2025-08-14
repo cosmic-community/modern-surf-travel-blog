@@ -1,16 +1,25 @@
 'use client'
 
-import { CategoryFilterProps } from '@/types'
+import { useState } from 'react'
+import { Category } from '@/types'
 
-export default function CategoryFilter({ 
-  categories, 
-  selectedCategory, 
-  onCategoryChange 
-}: CategoryFilterProps) {
+interface CategoryFilterProps {
+  categories: Category[]
+}
+
+export default function CategoryFilter({ categories }: CategoryFilterProps) {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  
+  const handleCategoryChange = (categoryId: string | null) => {
+    setSelectedCategory(categoryId)
+    // TODO: Implement filtering logic here
+    // This could trigger a search params update or filter the posts
+  }
+  
   return (
     <div className="flex flex-wrap gap-2">
       <button
-        onClick={() => onCategoryChange(null)}
+        onClick={() => handleCategoryChange(null)}
         className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
           selectedCategory === null
             ? 'bg-ocean-600 text-white'
@@ -23,7 +32,7 @@ export default function CategoryFilter({
       {categories.map((category) => (
         <button
           key={category.id}
-          onClick={() => onCategoryChange(category.id)}
+          onClick={() => handleCategoryChange(category.id)}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
             selectedCategory === category.id
               ? 'bg-ocean-600 text-white'
