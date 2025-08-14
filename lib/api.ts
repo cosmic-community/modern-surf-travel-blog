@@ -1,11 +1,5 @@
-import { createBucketClient } from '@cosmicjs/sdk'
-import { Post, Category, Author, CosmicResponse } from '@/types'
-
-// Initialize Cosmic client
-const cosmic = createBucketClient({
-  bucketSlug: process.env.COSMIC_BUCKET_SLUG as string,
-  readKey: process.env.COSMIC_READ_KEY as string,
-})
+import { cosmic, hasStatus } from '@/lib/cosmic'
+import { Post, Category, Author } from '@/types'
 
 // Get all posts with related data
 export async function getAllPosts(): Promise<Post[]> {
@@ -17,6 +11,10 @@ export async function getAllPosts(): Promise<Post[]> {
 
     return objects as Post[]
   } catch (error) {
+    if (hasStatus(error) && error.status === 404) {
+      // No posts found - return empty array
+      return []
+    }
     console.error('Error fetching posts:', error)
     return []
   }
@@ -32,6 +30,10 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 
     return object as Post
   } catch (error) {
+    if (hasStatus(error) && error.status === 404) {
+      // Post not found
+      return null
+    }
     console.error('Error fetching post:', error)
     return null
   }
@@ -46,6 +48,10 @@ export async function getAllCategories(): Promise<Category[]> {
 
     return objects as Category[]
   } catch (error) {
+    if (hasStatus(error) && error.status === 404) {
+      // No categories found - return empty array
+      return []
+    }
     console.error('Error fetching categories:', error)
     return []
   }
@@ -60,6 +66,10 @@ export async function getAllAuthors(): Promise<Author[]> {
 
     return objects as Author[]
   } catch (error) {
+    if (hasStatus(error) && error.status === 404) {
+      // No authors found - return empty array
+      return []
+    }
     console.error('Error fetching authors:', error)
     return []
   }
@@ -78,6 +88,10 @@ export async function getPostsByCategory(categorySlug: string): Promise<Post[]> 
 
     return objects as Post[]
   } catch (error) {
+    if (hasStatus(error) && error.status === 404) {
+      // No posts found for this category - return empty array
+      return []
+    }
     console.error('Error fetching posts by category:', error)
     return []
   }
