@@ -8,6 +8,50 @@ interface BlogPostPageProps {
   params: Promise<{ slug: string }>
 }
 
+// Helper function to process markdown content
+function processMarkdown(content: string): string {
+  if (!content) return ''
+  
+  return content
+    // Convert headings
+    .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold text-gray-900 mt-8 mb-4">$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold text-gray-900 mt-10 mb-6">$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-bold text-gray-900 mt-12 mb-8">$1</h1>')
+    
+    // Convert bold text
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
+    
+    // Convert italic text
+    .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+    
+    // Convert links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-ocean-600 hover:text-ocean-700 underline" target="_blank" rel="noopener noreferrer">$1</a>')
+    
+    // Convert unordered lists
+    .replace(/^\- (.*$)/gim, '<li class="mb-2">$1</li>')
+    .replace(/(<li class="mb-2">.*<\/li>)/s, '<ul class="list-disc list-inside mb-6 space-y-2">$1</ul>')
+    
+    // Convert ordered lists  
+    .replace(/^\d+\. (.*$)/gim, '<li class="mb-2">$1</li>')
+    .replace(/(<li class="mb-2">.*<\/li>)/s, '<ol class="list-decimal list-inside mb-6 space-y-2">$1</ol>')
+    
+    // Convert line breaks to paragraphs
+    .split('\n\n')
+    .map(paragraph => {
+      const trimmed = paragraph.trim()
+      if (!trimmed) return ''
+      
+      // Skip if already wrapped in HTML tags
+      if (trimmed.startsWith('<')) return trimmed
+      
+      // Replace single line breaks with <br> within paragraphs
+      const withBreaks = trimmed.replace(/\n/g, '<br>')
+      return `<p class="mb-6 text-gray-700 leading-relaxed">${withBreaks}</p>`
+    })
+    .filter(p => p)
+    .join('')
+}
+
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params
   
@@ -17,6 +61,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     if (!post) {
       notFound()
     }
+
+    // Process markdown content
+    const processedContent = processMarkdown(post.metadata.content || '')
 
     return (
       <article className="py-16">
@@ -34,9 +81,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             
             {post.metadata.category && (
               <div className="mb-4">
-                <span className="inline-block bg-ocean-100 text-ocean-800 px-3 py-1 rounded-full text-sm font-medium">
-                  {post.metadata.category.metadata.name}
-                </span>
+                <Link
+                  href={`/category/${post.metadata.category.slug}`}
+                  className="inline-block bg-ocean-100 text-ocean-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-ocean-200 transition-colors"
+                >
+                  {post.metadata.category.metadata?.name || post.metadata.category.title}
+                </Link>
               </div>
             )}
             
@@ -94,10 +144,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Content */}
           <div 
-            className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-ocean-600 hover:prose-a:text-ocean-700 prose-strong:text-gray-900"
-            dangerouslySetInnerHTML={{ 
-              __html: post.metadata.content.replace(/\n/g, '<br />').replace(/# (.*)/g, '<h2>$1</h2>').replace(/## (.*)/g, '<h3>$1</h3>').replace(/### (.*)/g, '<h4>$1</h4>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/- (.*)/g, '<li>$1</li>') 
-            }}
+            className="prose prose-lg max-w-none"
+            dangerouslySetInnerHTML={{ __html: processedContent }}
           />
 
           {/* Author Bio */}

@@ -1,19 +1,30 @@
 'use client'
 
-import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Category } from '@/types'
 
 interface CategoryFilterProps {
   categories: Category[]
+  selectedCategory?: string
 }
 
-export default function CategoryFilter({ categories }: CategoryFilterProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+export default function CategoryFilter({ categories, selectedCategory }: CategoryFilterProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   
-  const handleCategoryChange = (categoryId: string | null) => {
-    setSelectedCategory(categoryId)
-    // TODO: Implement filtering logic here
-    // This could trigger a search params update or filter the posts
+  const handleCategoryChange = (categorySlug: string | null) => {
+    const params = new URLSearchParams(searchParams.toString())
+    
+    if (categorySlug && categorySlug !== 'all') {
+      params.set('category', categorySlug)
+    } else {
+      params.delete('category')
+    }
+    
+    // Navigate to home page with category filter
+    const queryString = params.toString()
+    const url = queryString ? `/?${queryString}` : '/'
+    router.push(url)
   }
   
   return (
@@ -21,7 +32,7 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
       <button
         onClick={() => handleCategoryChange(null)}
         className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-          selectedCategory === null
+          !selectedCategory || selectedCategory === 'all'
             ? 'bg-ocean-600 text-white'
             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
         }`}
@@ -32,14 +43,14 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
       {categories.map((category) => (
         <button
           key={category.id}
-          onClick={() => handleCategoryChange(category.id)}
+          onClick={() => handleCategoryChange(category.slug)}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-            selectedCategory === category.id
+            selectedCategory === category.slug
               ? 'bg-ocean-600 text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
-          {category.metadata?.name}
+          {category.metadata?.name || category.title}
         </button>
       ))}
     </div>

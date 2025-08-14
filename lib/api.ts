@@ -75,13 +75,23 @@ export async function getAllAuthors(): Promise<Author[]> {
   }
 }
 
-// Get posts by category
+// Get posts by category slug - Fixed to query by category object relationship
 export async function getPostsByCategory(categorySlug: string): Promise<Post[]> {
   try {
+    // First, get the category object by slug to get its ID
+    const { object: category } = await cosmic.objects
+      .findOne({ type: 'categories', slug: categorySlug })
+      .props(['id'])
+    
+    if (!category) {
+      return []
+    }
+    
+    // Then query posts by category ID (correct way to query object relationships)
     const { objects } = await cosmic.objects
       .find({ 
         type: 'posts',
-        'metadata.category.slug': categorySlug 
+        'metadata.category': category.id
       })
       .props(['id', 'title', 'slug', 'metadata', 'created_at'])
       .depth(1)
