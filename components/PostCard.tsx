@@ -2,68 +2,81 @@ import Link from 'next/link'
 import { PostCardProps } from '@/types'
 
 export default function PostCard({ post, priority = false }: PostCardProps) {
-  const { metadata } = post
-  
   return (
-    <article className="card group hover:shadow-xl transition-all duration-300">
-      <Link href={`/posts/${post.slug}`} className="block">
-        {metadata.featured_image && (
-          <div className="aspect-[16/9] overflow-hidden">
-            <img
-              src={`${metadata.featured_image.imgix_url}?w=800&h=450&fit=crop&auto=format,compress`}
-              alt={post.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
+    <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group">
+      {/* Featured Image */}
+      {post.metadata.featured_image && (
+        <div className="aspect-video overflow-hidden">
+          <img
+            src={`${post.metadata.featured_image.imgix_url}?w=800&h=450&fit=crop&auto=format,compress`}
+            alt={post.metadata.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      )}
+      
+      <div className="p-6">
+        {/* Category */}
+        {post.metadata.category && (
+          <div className="mb-3">
+            <span className="inline-block bg-ocean-100 text-ocean-800 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+              {post.metadata.category.metadata.name}
+            </span>
           </div>
         )}
         
-        <div className="p-6">
-          {metadata.category && (
-            <span className="inline-block bg-ocean-100 text-ocean-700 px-2 py-1 rounded text-xs font-medium mb-3">
-              {metadata.category.metadata?.name}
-            </span>
-          )}
+        {/* Title */}
+        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-ocean-600 transition-colors">
+          <Link href={`/blog/${post.slug}`}>
+            {post.metadata.title}
+          </Link>
+        </h3>
+        
+        {/* Excerpt */}
+        <p className="text-gray-600 mb-4 line-clamp-3">
+          {post.metadata.content.split('\n')[0].replace(/^# /, '') || post.metadata.title}
+        </p>
+        
+        {/* Meta Info */}
+        <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+          <div className="flex items-center space-x-2">
+            {post.metadata.author?.metadata.avatar && (
+              <img
+                src={`${post.metadata.author.metadata.avatar.imgix_url}?w=60&h=60&fit=crop&auto=format,compress`}
+                alt={post.metadata.author.metadata.name}
+                className="w-6 h-6 rounded-full"
+              />
+            )}
+            <span>{post.metadata.author?.metadata.name}</span>
+          </div>
           
-          <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-ocean-600 transition-colors line-clamp-2">
-            {post.title}
-          </h3>
-          
-          <p className="text-gray-600 mb-4 line-clamp-3">
-            {metadata.content?.substring(0, 120)}...
-          </p>
-          
-          <div className="flex items-center justify-between text-sm text-gray-500">
-            <div className="flex items-center space-x-4">
-              {metadata.author && (
-                <div className="flex items-center space-x-2">
-                  {metadata.author.metadata?.avatar && (
-                    <img
-                      src={`${metadata.author.metadata.avatar.imgix_url}?w=32&h=32&fit=crop&auto=format,compress`}
-                      alt={metadata.author.metadata.name}
-                      className="w-6 h-6 rounded-full"
-                    />
-                  )}
-                  <span>{metadata.author.metadata?.name}</span>
-                </div>
-              )}
-              
-              {metadata.location && (
-                <div className="flex items-center space-x-1">
-                  <span>📍</span>
-                  <span className="truncate">{metadata.location}</span>
-                </div>
-              )}
-            </div>
-            
-            {metadata.wave_rating && (
-              <div className="flex items-center space-x-1 bg-gray-100 px-2 py-1 rounded">
+          <div className="flex items-center space-x-3">
+            {post.metadata.location && (
+              <span className="flex items-center space-x-1">
+                <span>📍</span>
+                <span>{post.metadata.location}</span>
+              </span>
+            )}
+            {post.metadata.wave_rating && (
+              <span className="flex items-center space-x-1">
                 <span>⭐</span>
-                <span className="text-xs font-medium">{metadata.wave_rating.key}/5</span>
-              </div>
+                <span>{post.metadata.wave_rating.value.split(' - ')[0]}</span>
+              </span>
             )}
           </div>
         </div>
-      </Link>
+        
+        {/* Read More Link */}
+        <Link 
+          href={`/blog/${post.slug}`}
+          className="inline-flex items-center text-ocean-600 hover:text-ocean-700 font-medium text-sm transition-colors"
+        >
+          Read More
+          <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+      </div>
     </article>
   )
 }
